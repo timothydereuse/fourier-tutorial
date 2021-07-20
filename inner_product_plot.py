@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.io.wavfile as wavfile
 from matplotlib import pyplot as plt
 from matplotlib import rc
 
@@ -15,8 +16,8 @@ plt.style.use('dark_background')
 def inner_product_figure(func_a, func_b, signal_ylim=None, signal_xlim=None, sr=44100, signal_length=1,
     title_a="Signal A", title_b="Signal B", title_ab='A * B', title="", caption=""):
 
-    x = np.linspace(0, signal_length, num=sr * signal_length)
-    hline = np.zeros(sr * signal_length)
+    x = np.linspace(0, signal_length, num=int(sr * signal_length))
+    hline = np.zeros(int(sr * signal_length))
 
     if not callable(func_a):
         signal_a = func_a 
@@ -291,7 +292,7 @@ figdef['caption'] = ('$\displaystyle f(t): \mathrm{Noise}$\n'
                 '$\displaystyle g(t): 440 \mathrm{Hz} $\n')
 x = np.linspace(0, signal_length, num=sr * signal_length)
 a = np.sin(440 * 2 * np.pi * x) * 0.2
-num_noise_pts = 10000
+num_noise_pts = 11000
 noise_pts = np.random.uniform(-1, 1, num_noise_pts)
 noise = np.interp(x, np.linspace(0, signal_length, num=num_noise_pts), fp=noise_pts)
 
@@ -310,4 +311,20 @@ save_img(figdef)
 figdef['caption'] = ('$\displaystyle f(t): 440 \mathrm{Hz} + \mathrm{Noise}$\n' 
                 '$\displaystyle g(t): 445 \mathrm{Hz} $\n')
 figdef['func_b'] = lambda z: (np.sin(445 * 2 * np.pi * z))
+save_img(figdef)
+
+ 
+guitar_sr, aguitar_note = wavfile.read('aguitar_110hz.wav')
+assert guitar_sr == sr
+aguitar_note = aguitar_note[:, 0] / np.max(np.abs(aguitar_note))
+
+figdef['signal_length'] = 0.7
+aguitar_note_crop = aguitar_note[5000:5000 + int(sr * 0.7)]
+
+figdef['signal_xlim'] = [0, 0.1]
+figdef['caption'] = ('$\displaystyle f(t):$ Guitar playing A2 (110 Hz)\n' 
+                '$\displaystyle g(t): 110 \mathrm{Hz} $\n')
+figdef['func_a'] = aguitar_note_crop
+figdef['func_b'] = lambda z: (np.sin(110 * 2 * np.pi * z))
+
 save_img(figdef)
