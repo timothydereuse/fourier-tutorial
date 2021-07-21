@@ -94,24 +94,26 @@ def inner_product_figure(func_a, func_b, signal_ylim=None, signal_xlim=None, sr=
 
     dots_normalized = np.array([dot_above, dot_below, dot_result]) / signal_length
 
-    axs_right[1].set_ylim([-0.5, 0.5])
-    axs_right[1].set_xticklabels(['Above', 'Below', 'Total'], rotation = 45)
+    axs_right[1].set_ylim([-0.55, 0.55])
+    axs_right[1].set_xticklabels(['Above', 'Below', '$\displaystyle \langle f, g \rangle $'], rotation = 45)
     axs_right[1].grid(axis='y', c='gray', ls='--')
     axs_right[1].set_facecolor('0.07')
     axs_right[1] = plt.bar(
         [1, 2, 3],
         dots_normalized,
         color=['cornflowerblue', 'goldenrod', 'white'],
-        tick_label=['Above', 'Below', 'Total'],
+        tick_label=['Above', 'Below', '$\displaystyle \langle f, g \rangle $'],
     )
 
     tx = (
         f'{caption}\n'
-        f'\\texttt{{Area above curve \ : {dots_normalized[0]:10.4} }}\n'
-        f'\\texttt{{Area below curve \ : {dots_normalized[1]:10.4} }}\n'
-        f'\\texttt{{Correlation   \ \ \ \ \ : {dots_normalized[2]:10.4} }}'
-
+        r'\begin{tabular}{ l  r }'
+        r'Area above $\displaystyle f(t)g(t)  $ & \texttt{ ' f'{dots_normalized[0]:10.4}' r'} \\ '
+        r'Area below $\displaystyle f(t)g(t)  $ & \texttt{ ' f'{dots_normalized[1]:10.4}' r'} \\ '
+        r'$\displaystyle \langle f, g \rangle $ \ & \texttt{ ' f'{dots_normalized[2]:10.4}' r'} \\ '
+        r'\end{tabular}'
     )
+
 
     plt.text(0.70, 0.7, tx, fontsize=15, transform=fig.transFigure)
 
