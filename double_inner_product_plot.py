@@ -7,7 +7,7 @@ plt.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
     "font.serif": ["Palatino"],
-    "font.size": 12
+    "font.size": 16
 })
 
 plt.style.use('dark_background')
@@ -81,34 +81,40 @@ def inner_product_figure(func_a, func_b, func_c, signal_ylim=None, signal_xlim=N
         axs_left[ind].grid(axis='y', c='gray', ls='--', lw=0.5)
         axs_left[ind].set_ylim(signal_ylim)
         axs_left[ind].set_facecolor('0.07')
+        plt.setp(axs_left[ind].get_yticklabels(), visible=False)
+        axs_left[ind].get_yaxis().set_ticklabels([])
+
+    # for ax in axs_left:
+    #     plt.setp(ax.spines.values(), color='0.3')
+    #     plt.setp([ax.get_xticklines(), ax.get_yticklines()], color='0.7')
 
 
-    axs_left[0].plot(x, signal_a)
+    axs_left[0].plot(x, signal_a, color='cyan')
     axs_left[0].set_xlim(signal_xlim)
-    axs_left[0].set_ylabel(title_a)
+    axs_left[0].set_ylabel(title_a, rotation=90)
     plt.setp(axs_left[0].get_xticklabels(), visible=False)
 
-    axs_left[1].plot(x, signal_b)
-    axs_left[1].set_ylabel(title_b)
+    axs_left[1].plot(x, signal_b, color='goldenrod')
+    axs_left[1].set_ylabel(title_b, rotation=90)
     plt.setp(axs_left[1].get_xticklabels(), visible=False)
 
-    axs_left[3].plot(x, signal_c)
-    axs_left[3].set_ylabel(title_c)
+    axs_left[3].plot(x, signal_c, color='yellow')
+    axs_left[3].set_ylabel(title_c, rotation=90)
     plt.setp(axs_left[3].get_xticklabels(), visible=False)
 
     axs_left[2].plot(x, ab)
-    axs_left[2].set_ylabel(title_ab)
+    axs_left[2].set_ylabel(title_ab, rotation=90)
 
-    axs_left[2].fill_between(x, hline, np.max(ab_thresh_mult, 1), color='cornflowerblue')
-    axs_left[2].fill_between(x, hline, np.min(ab_thresh_mult, 1), color='goldenrod')
+    axs_left[2].fill_between(x, hline, np.max(ab_thresh_mult, 1), color='darkslateblue')
+    axs_left[2].fill_between(x, hline, np.min(ab_thresh_mult, 1), color='firebrick')
     plt.setp(axs_left[2].get_xticklabels(), visible=False)
 
     axs_left[4].plot(x, ac)
-    axs_left[4].set_ylabel(title_ac)
+    axs_left[4].set_ylabel(title_ac, rotation=90)
     axs_left[4].set_xlabel(r"Time (\textit{s})")
 
-    axs_left[4].fill_between(x, hline, np.max(ac_thresh_mult, 1), color='cornflowerblue')
-    axs_left[4].fill_between(x, hline, np.min(ac_thresh_mult, 1), color='goldenrod')
+    axs_left[4].fill_between(x, hline, np.max(ac_thresh_mult, 1), color='darkslateblue')
+    axs_left[4].fill_between(x, hline, np.min(ac_thresh_mult, 1), color='firebrick')
 
 
     # RIGHT SUBFIGURE
@@ -125,19 +131,19 @@ def inner_product_figure(func_a, func_b, func_c, signal_ylim=None, signal_xlim=N
 
     dots_normalized = np.array([ab_dot_result, ac_dot_result, magnitude, phase]) / signal_length
 
-    axs_right[1].set_ylim([-0.5, 0.55])
+    axs_right[1].set_ylim([-0.5, 0.55]) 
     axs_right[1].set_xticklabels(['1', '2'], rotation = 45)
     axs_right[1].grid(axis='y', c='gray', ls='--')
     axs_right[1].set_facecolor('0.07')
     axs_right[1] = plt.bar(
         [1, 2, 3, 4],
         dots_normalized,
-        color=['teal', 'red','white', 'gray' ],
+        color=['goldenrod', 'yellow', 'white', 'gray' ],
         tick_label=[
             '$\displaystyle \\langle f,\\ g_1 \\rangle $',
             '$\displaystyle \\langle f,\\ g_2 \\rangle $',
-            'Amplitude',
-            'Phase'],
+            r'\textit{A}',
+            '$\displaystyle \phi / 2\pi $'],
     )
 
     tx = (
@@ -145,8 +151,8 @@ def inner_product_figure(func_a, func_b, func_c, signal_ylim=None, signal_xlim=N
         r'\begin{tabular}{ l  r }'
         r'$\displaystyle \langle f, g_1 \rangle $ \ & \texttt{ ' f'{dots_normalized[0]:10.4}' r'} \\ '
         r'$\displaystyle \langle f, g_2 \rangle $ \ & \texttt{ ' f'{dots_normalized[1]:10.4}' r'} \\ '
-        r'Magnitude \ & \texttt{ '                               f'{dots_normalized[2]:10.4}' r'} \\ '
-        r'Phase & \texttt{ '                                     f'{dots_normalized[3]:10.4}' r'} * $\displaystyle 2\pi $ \\ '
+        r'Amplitude \ & \texttt{ '                               f'{dots_normalized[2]:10.4}' r'} \\ '
+        r'Phase / $\displaystyle 2\pi $ & \texttt{ '             f'{dots_normalized[3]:10.4}' r'}  \\ '
         r'\end{tabular}'
     )
 
@@ -160,7 +166,7 @@ def save_img(figdef):
     # yeah, yeah, it's a hack to save time
     global img_ind
     fig = inner_product_figure(**figdef)
-    fig.savefig(f'./out_imgs/double_{img_ind}.png', pad_inches=0, bbox_inches='tight')
+    fig.savefig(f'./out_imgs/double_{img_ind}.png', pad_inches=0.1, bbox_inches='tight')
     img_ind += 1
 
 sr = 44100
@@ -177,16 +183,127 @@ figdef = {
 
     'caption': '',
     'signal_ylim': [-1.1, 1.1],
-    'signal_xlim': [0, 0.0],
-    'func_a': lambda z: (np.sin(2 * np.pi * (440 * z + 0.25))),
-    'func_b': lambda z: (np.cos(440 * 2 * np.pi * z)),
-    'func_c': lambda z: (np.sin(440 * 2 * np.pi * z)),
+    'signal_xlim': [0, 0.2],
+    'func_a': lambda z: (np.sin(2 * np.pi * (440 * z + 0.0))),
+    'func_b': lambda z: (np.sin(440 * 2 * np.pi * z)),
+    'func_c': lambda z: (np.cos(440 * 2 * np.pi * z)),
 }
 
 figdef['caption'] = (
-    '$\displaystyle f(t): 440 \mathrm{Hz} $\n' 
+    '$\displaystyle f(t): 440 \mathrm{Hz},\ \phi = 0 $\n' 
     '$\displaystyle g_1(t): 440 \mathrm{Hz},\ \phi = 0 $\n'
-    '$\displaystyle g_2(t): 440 \mathrm{Hz},\ \phi = 0.25 (2 \pi) $\n'
+    '$\displaystyle g_2(t): 440 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
     )
-figdef['signal_xlim'] = [0, 0.05]
+figdef['signal_xlim'] = [0, 0.025]
+save_img(figdef)
+
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (440 * z + 0.66)))
+figdef['caption'] = (
+    '$\displaystyle f(t): 440 \mathrm{Hz},\ \phi = 0.66 (2 \pi) $\n' 
+    '$\displaystyle g_1(t): 440 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 440 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (440 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): 440 \mathrm{Hz},\ \phi = 0.25 (2 \pi) $\n' 
+    '$\displaystyle g_1(t): 440 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 440 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (440 * z + 0.66)))
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (333 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (333 * z + 0.25)))
+
+figdef['caption'] = (
+    '$\displaystyle f(t): 440 \mathrm{Hz},\ \phi = 0.66 (2 \pi) $\n' 
+    '$\displaystyle g_1(t): 333 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 333 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+figdef['signal_xlim'] = [0, 0.1]
+x = np.linspace(0, 1, num=int(sr * signal_length))
+a = sum([
+    np.array(np.sin(2 * np.pi * (b * x + np.random.uniform()))) / 5 
+    for b in [110, 164.81, 277.18, 392.00, 233.08]
+])
+
+figdef['func_a'] = a
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0.25)))
+
+figdef['caption'] = (
+    '$\displaystyle f(t): $ An Ab9 chord on 110 Hz, \n with random phases\n' 
+    '$\displaystyle g_1(t): 110 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 110 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+wavfile.write('Ab9chord.wav', sr, a)
+
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (200 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (200 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): $ An Ab9 chord on 110 Hz, \n with random phases\n' 
+    '$\displaystyle g_1(t): 200 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 200 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+wavfile.write('Ab9chord.wav', sr, a)
+
+x = np.linspace(0, signal_length, num=sr * signal_length)
+num_noise_pts = 3424
+noise_pts = np.random.uniform(-1, 1, num_noise_pts)
+noise = np.interp(x, np.linspace(0, signal_length, num=num_noise_pts), fp=noise_pts)
+a = (noise + a) / 2
+
+figdef['func_a'] = a
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (164.81 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (164.81 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): $ An Ab9 chord on 110 Hz + Noise \n' 
+    '$\displaystyle g_1(t): 164.81 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 164.81 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+
+# moment of truth: test guitar tone
+
+guitar_sr, aguitar_note = wavfile.read('aguitar_110hz.wav')
+assert guitar_sr == sr
+aguitar_note = aguitar_note[:, 0] / np.max(np.abs(aguitar_note))
+aguitar_note_crop = aguitar_note[5000:5000 + int(sr)]
+
+# yes, i had to mess with the frequencies a bit. my guitar was not perfectly in tune :(
+figdef['func_a'] = aguitar_note_crop
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (109.5 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (109.5 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): $ Guitar playing A2 (110 Hz)\n' 
+    '$\displaystyle g_1(t): 110 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 110 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (105 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (105 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): $ Guitar playing A2 (110 Hz)\n' 
+    '$\displaystyle g_1(t): 100 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 100 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
+save_img(figdef)
+
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (219.5 * z + 0)))
+figdef['func_c'] = lambda z: (np.sin(2 * np.pi * (219.5 * z + 0.25)))
+figdef['caption'] = (
+    '$\displaystyle f(t): $ Guitar playing A2 (110 Hz)\n' 
+    '$\displaystyle g_1(t): 220 \mathrm{Hz},\ \phi = 0 $\n'
+    '$\displaystyle g_2(t): 220 \mathrm{Hz},\ \phi = 0.25 (2 \pi)$\n'
+    )
 save_img(figdef)

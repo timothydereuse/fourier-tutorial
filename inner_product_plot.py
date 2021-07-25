@@ -7,7 +7,7 @@ plt.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
     "font.serif": ["Palatino"],
-    "font.size": 12
+    "font.size": 16
 })
 
 plt.style.use('dark_background')
@@ -65,25 +65,28 @@ def inner_product_figure(func_a, func_b, signal_ylim=None, signal_xlim=None, sr=
         axs_left[ind].grid(axis='y', c='gray', ls='--', lw=0.5)
         axs_left[ind].set_ylim(signal_ylim)
         axs_left[ind].set_facecolor('0.07')
+        plt.setp(axs_left[ind].get_yticklabels(), visible=False)
+        axs_left[ind].get_yaxis().set_ticklabels([])
 
 
-    axs_left[0].plot(x, signal_a)
+
+    axs_left[0].plot(x, signal_a, color='cyan')
     axs_left[0].set_xlim(signal_xlim)
-    axs_left[0].set_ylabel(title_a)
+    axs_left[0].set_ylabel(title_a, rotation=90)
     plt.setp(axs_left[0].get_xticklabels(), visible=False)
 
-    axs_left[1].plot(x, signal_b)
-    axs_left[1].set_ylabel(title_b)
+    axs_left[1].plot(x, signal_b, color='goldenrod')
+    axs_left[1].set_ylabel(title_b, rotation=90)
     plt.setp(axs_left[1].get_xticklabels(), visible=False)
 
     axs_left[2].plot(x, ab)
-    axs_left[2].set_ylabel(title_ab)
+    axs_left[2].set_ylabel(title_ab, rotation=90)
     axs_left[2].set_xlabel(r"Time (\textit{s})")
     axs_left[2].set_ylim(signal_ylim)
 
 
-    axs_left[2].fill_between(x, hline, np.max(thresh_mult, 1), color='cornflowerblue')
-    axs_left[2].fill_between(x, hline, np.min(thresh_mult, 1), color='goldenrod')
+    axs_left[2].fill_between(x, hline, np.max(thresh_mult, 1), color='darkslateblue')
+    axs_left[2].fill_between(x, hline, np.min(thresh_mult, 1), color='firebrick')
 
     # RIGHT SUBFIGURE
 
@@ -95,14 +98,14 @@ def inner_product_figure(func_a, func_b, signal_ylim=None, signal_xlim=None, sr=
     dots_normalized = np.array([dot_above, dot_below, dot_result]) / signal_length
 
     axs_right[1].set_ylim([-0.55, 0.55])
-    axs_right[1].set_xticklabels(['Above', 'Below', '$\displaystyle \langle f, g \rangle $'], rotation = 45)
+    axs_right[1].set_xticklabels(['Above', 'Below', r'$\displaystyle \langle f, g \rangle $'], rotation = 45)
     axs_right[1].grid(axis='y', c='gray', ls='--')
     axs_right[1].set_facecolor('0.07')
     axs_right[1] = plt.bar(
         [1, 2, 3],
         dots_normalized,
-        color=['cornflowerblue', 'goldenrod', 'white'],
-        tick_label=['Above', 'Below', '$\displaystyle \langle f, g \rangle $'],
+        color=['darkslateblue', 'firebrick', 'white'],
+        tick_label=['Above', 'Below', r'$\displaystyle \langle f, g \rangle $'],
     )
 
     tx = (
@@ -125,7 +128,7 @@ def save_img(figdef):
     # yeah, yeah, it's a hack to save time
     global img_ind
     fig = inner_product_figure(**figdef)
-    fig.savefig(f'./out_imgs/{img_ind}.png', pad_inches=0, bbox_inches='tight')
+    fig.savefig(f'./out_imgs/{img_ind}.png', pad_inches=0.1, bbox_inches='tight')
     img_ind += 1
 
 sr = 44100
@@ -230,7 +233,7 @@ save_img(figdef)
 figdef['signal_xlim'] = [0, 0.1]
 save_img(figdef)
 
-figdef['signal_xlim'] = [0, 0.5]
+figdef['signal_xlim'] = [0, 0.25]
 save_img(figdef)
 
 figdef['signal_xlim'] = [0, 0.025]
@@ -286,6 +289,7 @@ noise_pts = np.random.uniform(-1, 1, num_noise_pts)
 noise = np.interp(x, np.linspace(0, signal_length, num=num_noise_pts), fp=noise_pts)
 a = a + (noise / 2)
 
+wavfile.write('slighty_noisy_sine.wav', sr, a)
 figdef['func_a'] = a
 figdef['func_b'] = lambda z: (np.sin(440 * 2 * np.pi * z))
 save_img(figdef)
@@ -298,6 +302,7 @@ num_noise_pts = 11000
 noise_pts = np.random.uniform(-1, 1, num_noise_pts)
 noise = np.interp(x, np.linspace(0, signal_length, num=num_noise_pts), fp=noise_pts)
 
+wavfile.write('very_noisy_sine.wav', sr, a)
 figdef['func_a'] = noise
 figdef['func_b'] = lambda z: (np.sin(440 * 2 * np.pi * z))
 save_img(figdef)
@@ -330,3 +335,26 @@ figdef['func_a'] = aguitar_note_crop
 figdef['func_b'] = lambda z: (np.sin(110 * 2 * np.pi * z))
 
 save_img(figdef)
+
+# I HAVE LIED TO YOU: PHASE PROBLEMS
+
+figdef['signal_length'] = 1
+figdef['signal_xlim'] = [0, 0.025]
+figdef['caption'] = ('$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0.33 (2 \pi) $\n' 
+                '$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0 $\n')
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0.33)))
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0)))
+save_img(figdef)
+
+figdef['caption'] = ('$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0.5 (2 \pi) $\n' 
+                '$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0 $\n')
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0.5)))
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0)))
+save_img(figdef)
+
+figdef['caption'] = ('$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0.25 (2 \pi) $\n' 
+                '$\displaystyle g(t): 110 \mathrm{Hz}, \phi = 0 $\n')
+figdef['func_a'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0.25)))
+figdef['func_b'] = lambda z: (np.sin(2 * np.pi * (110 * z + 0)))
+save_img(figdef)
+
