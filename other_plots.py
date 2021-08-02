@@ -15,10 +15,16 @@ signal_length = 1
 
 plt.style.use('dark_background')
 
+# fig = plt.figure(figsize=[16, 9])
+
+# x = np.linspace(0, 0.2, num=int(sr * signal_length))
+# a = (np.sin(2 * np.pi * (50 * x + 0))) + 1
+
+# plt.plot(x, a)
+# plt.clf()
+
 fig = plt.figure(figsize=[16, 9])
-
 axs = fig.subplots(3, 1, sharex=True)
-
 
 for ind in range(3):
     axs[ind].grid(axis='y', c='gray', ls='--', lw=0.5)

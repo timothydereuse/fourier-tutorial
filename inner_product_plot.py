@@ -265,7 +265,7 @@ save_img(figdef)
 
 figdef['caption'] = ('$\displaystyle f(t): 440 \mathrm{Hz} + 220 \mathrm{Hz} + 179 \mathrm{Hz}$\n' 
                 '$\displaystyle g(t): 440 \mathrm{Hz} $\n')
-figdef['func_a'] = lambda z: (np.sin(440 * 2 * np.pi * z) + np.sin(220 * 2 * np.pi * z)) / 2
+figdef['func_a'] = lambda z: (np.sin(440 * 2 * np.pi * z) + np.sin(220 * 2 * np.pi * z)  + np.sin(179 * 2 * np.pi * z)) / 3
 figdef['func_b'] = lambda z: (np.sin(440 * 2 * np.pi * z))
 save_img(figdef)
 
